@@ -54,7 +54,7 @@ function debounceLazy(f, ms) {
 
 const API = (function() {
 
-class ProcExit extends Error {
+class ProcExit extends Error {  //usati per stampare errori nel terminale
   constructor(code) {
     super(`process exited with code ${code}.`);
     this.code = code;
@@ -221,6 +221,7 @@ class MemFS {
     }
     this.hostMem_.write32(nwritten_out, size);
     this.hostWrite(str);
+    term.write(str); //messo totalmente ad intuito DA APPROFONDIRE
     return ESUCCESS;
   }
 
@@ -358,7 +359,6 @@ class App {
     //console.log("run di App: " + await this.ready)
     try {
       this.exports._start();
-      console.log("run di app, inizio a scrivere")
     } catch (exn) {
       let writeStack = true;
       if (exn instanceof ProcExit) {
@@ -381,9 +381,8 @@ class App {
         msg = msg + `\n${exn.stack}`;
       }
       msg += '\x1b[0m\n';
-      console.log("Sono app.run, messaggio:"+msg);
       this.memfs.hostWrite(msg);
-      
+      term.write(msg);
       // Propagate error.
       throw exn;
     }
@@ -689,13 +688,13 @@ class API {
   }
 
   hostLog(message) {
-    const yellowArrow = '\x1b[1;93m>\x1b[0m ';
+    const yellowArrow = '\x1b[1;93m>\x1b[0m ';  //ogni hostlog inizia con una freccia gialla nel terminale (Vedi esempio originale)
     this.hostWrite(`${yellowArrow}${message}`);
   }
 
   async hostLogAsync(message, promise) {
     const start = +new Date();
-    this.hostLog(`${message}...`);
+    this.hostLog(`${message}...`);  //ongi hostlogAsync è composto da un hostlog ed un a capi, se l'utente mette spunta su showtiming allora compare il tempo in verde (non ci interessa)
     const result = await promise;
     const end = +new Date();
     this.hostWrite(' done.');
@@ -738,38 +737,6 @@ class API {
                           ...this.clangCommonArgs, '-O2', '-o', obj, '-x',
                           'c++', input);
   }
-
-  async compileToAssembly(options) {
-    const input = options.input;
-    const output = options.output;
-    const contents = options.contents;
-    const obj = options.obj;
-    const triple = options.triple || 'x86_64';
-    const opt = options.opt || '2';
-
-    await this.ready;
-    this.memfs.addFile(input, contents);
-    const clang = await this.getModule(this.clangFilename);
-    await this.run(clang, 'clang', '-cc1', '-S', ...this.clangCommonArgs,
-                          `-triple=${triple}`, '-mllvm',
-                          '--x86-asm-syntax=intel', `-O${opt}`,
-                          '-o', output, '-x', 'c++', input);
-    return this.memfs.getFileContents(output);
-  }
-
-  async compileTo6502(options) {
-    const input = options.input;
-    const output = options.output;
-    const contents = options.contents;
-    const flags = options.flags;
-
-    await this.ready;
-    this.memfs.addFile(input, contents);
-    const vasm = await this.getModule('vasm6502_oldstyle');
-    await this.run(vasm, 'vasm6502_oldstyle', ...flags, '-o', output, input);
-    return this.memfs.getFileContents(output);
-  }
-
   async link(obj, wasm) {
     const stackSize = 1024 * 1024;
 
@@ -785,12 +752,12 @@ class API {
   }
 
   async run(module, ...args) {
-    console.log("Ho iniziato run")
+    //console.log("Ho iniziato run")
     this.hostLog(`${args.join(' ')}\n`);
     const start = +new Date();
-    const app = new App(module, this.memfs, ...args);
+    const app = new App(module, this.memfs, ...args); //crea oggetto App
     const instantiate = +new Date();
-    const stillRunning = await app.run();
+    const stillRunning = await app.run(); //chiama run di App
     const end = +new Date();
     this.hostWrite('\n');
     if (this.showTiming) {
@@ -800,11 +767,12 @@ class API {
       msg += `/${msToSec(instantiate, end)}s)${normal}\n`;
       this.hostWrite(msg);
     }
-    return stillRunning ? app : null;
+
+    return stillRunning ? app : null; //ritorna il risultato del metodo run della classe app
   }
 
   async compileLinkRun(contents) {
-    console.log("Ho iniziato compile: " + contents)
+    //console.log("Ho iniziato compile: " + contents)
     const input = `test.cc`;
     const obj = `test.o`;
     const wasm = `test.wasm`;
@@ -813,9 +781,8 @@ class API {
 
     const buffer = this.memfs.getFileContents(wasm);
     const testMod = await this.hostLogAsync(`Compiling ${wasm}`,
-                                            WebAssembly.compile(buffer));
-    console.log("questo è il return di compileLinkrun: "+ await this.run(testMod, wasm))
-    return await this.run(testMod, wasm);
+                                            WebAssembly.compile(buffer)); //il metodo hostLogAsync stampa su terminale il primo parametro e risolve la promise del secondo parametro, in questo caso ritorna il risultato di webassemply.compile
+    return await this.run(testMod, wasm); //aspetta il risultato del metodo async run della classe API
     
   }
 }
