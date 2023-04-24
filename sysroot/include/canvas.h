@@ -203,6 +203,8 @@ class Canvas {
 
   void beginPath() { canvas_beginPath(); }
 
+  void debug() { mydebug(); }
+
   void bezierCurveTo(f64 cp1x, f64 cp1y, f64 cp2x, f64 cp2y, f64 x, f64 y) {
     canvas_bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
   }
