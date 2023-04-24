@@ -355,6 +355,8 @@ class App {
   }
 
   async run() {
+    term.write("> Running code ...");
+    term.write("\n");
     await this.ready;
     //console.log("run di App: " + await this.ready)
     try {
@@ -501,11 +503,11 @@ class App {
   }
 
   // Other Canvas methods.
-  mydebug(){console.log("test");}
+  mydebug(...args){if (ctx2d){ ctx2d.debug(...args); console.log("test");} } //implemento mydebug() come una funziona che chiama debug()
 
   canvas_arc(...args) { if (ctx2d) ctx2d.arc(...args); }
   canvas_arcTo(...args) { if (ctx2d) ctx2d.arcTo(...args); }
-  canvas_beginPath(...args) { if (ctx2d) ctx2d.beginPath(...args); wind.prompt("ciao"); }
+  canvas_beginPath(...args) { if (ctx2d) ctx2d.beginPath(...args); }
   canvas_bezierCurveTo(...args) { if (ctx2d) ctx2d.bezierCurveTo(...args); }
   canvas_clearRect(...args) { if (ctx2d) ctx2d.clearRect(...args); }
   canvas_clip(value) { if (ctx2d) ctx2d.clip(['nonzero', 'evenodd'][value]); }
@@ -694,7 +696,7 @@ class API {
 
   async hostLogAsync(message, promise) {
     const start = +new Date();
-    this.hostLog(`${message}...`);  //ongi hostlogAsync è composto da un hostlog ed un a capi, se l'utente mette spunta su showtiming allora compare il tempo in verde (non ci interessa)
+    this.hostLog(`${message}...`);  //ogni hostlogAsync è composto da un hostlog ed un a capi, se l'utente mette spunta su showtiming allora compare il tempo in verde (non ci interessa)
     const result = await promise;
     const end = +new Date();
     this.hostWrite(' done.');

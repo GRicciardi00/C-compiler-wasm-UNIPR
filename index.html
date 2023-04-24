@@ -93,7 +93,6 @@
   function EditorComponent(container, state) {
     editor = ace.edit(container.getElement()[0]);
     editor.session.setMode('ace/mode/c_cpp');
-    editor.setKeyboardHandler('ace/keyboard/vim');
     editor.setOption('fontSize',);
     editor.setValue(state.value || '');
     editor.clearSelection();
@@ -241,9 +240,10 @@ const initialProgram =
 using namespace std;
 
 int main() {
-    int a;
-    cin >> a;
+    int a = 10;
     cout << a << endl;
+
+    return 0;
 }
 `;
 
@@ -304,7 +304,7 @@ function resetLayout() {
 }
 
 // Toolbar stuff
-$('#reset').on('click', event => { if (confirm('really reset?')) resetLayout() });
+$('#reset').on('click', event => { if (confirm('Confermi il reset ?')) resetLayout() });
 //$('#run').on('click', event => run(editor));
 
 
@@ -313,7 +313,7 @@ initLayout();
 
   const channel = new MessageChannel();
   let port = channel.port1;
-    const apiOptions = {
+  const apiOptions = {
       async readBuffer(filename) {
         const response = await fetch(filename);
         return response.arrayBuffer();
@@ -332,8 +332,14 @@ initLayout();
     
       hostWrite(s) { port.postMessage({id : 'write', data : s});},
       onmessage(event) {
-  }
-    };
+        port = event.data.data;
+        port.onmessage = onmessage;
+    }
+    /*const onAnyMessage = async event => {
+        port = event.data.data;
+        port.onmessage = onmessage;
+    };*/
+  };
 
       async function run(codice, api){
       currentApp = await api.compileLinkRun(codice); //vuole contents , il codice
@@ -353,8 +359,6 @@ initLayout();
     api = new API(apiOptions);
   
     run(editor.getValue(), api);
-    });
+  });
     
-
-  
   </script>
