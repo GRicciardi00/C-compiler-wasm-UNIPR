@@ -221,6 +221,7 @@ class MemFS {
     }
     this.hostMem_.write32(nwritten_out, size);
     this.hostWrite(str);
+    
     return ESUCCESS;
   }
 
