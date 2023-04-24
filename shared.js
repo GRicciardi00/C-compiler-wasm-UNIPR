@@ -355,8 +355,10 @@ class App {
 
   async run() {
     await this.ready;
+    //console.log("run di App: " + await this.ready)
     try {
       this.exports._start();
+      console.log("run di app, inizio a scrivere")
     } catch (exn) {
       let writeStack = true;
       if (exn instanceof ProcExit) {
@@ -379,8 +381,9 @@ class App {
         msg = msg + `\n${exn.stack}`;
       }
       msg += '\x1b[0m\n';
+      console.log("Sono app.run, messaggio:"+msg);
       this.memfs.hostWrite(msg);
-
+      
       // Propagate error.
       throw exn;
     }
@@ -782,6 +785,7 @@ class API {
   }
 
   async run(module, ...args) {
+    console.log("Ho iniziato run")
     this.hostLog(`${args.join(' ')}\n`);
     const start = +new Date();
     const app = new App(module, this.memfs, ...args);
@@ -800,6 +804,7 @@ class API {
   }
 
   async compileLinkRun(contents) {
+    console.log("Ho iniziato compile: " + contents)
     const input = `test.cc`;
     const obj = `test.o`;
     const wasm = `test.wasm`;
@@ -809,7 +814,9 @@ class API {
     const buffer = this.memfs.getFileContents(wasm);
     const testMod = await this.hostLogAsync(`Compiling ${wasm}`,
                                             WebAssembly.compile(buffer));
+    console.log("questo è il return di compileLinkrun: "+ await this.run(testMod, wasm))
     return await this.run(testMod, wasm);
+    
   }
 }
 

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+
+
+/* PROVA PER ELIMINARE WORKER
 self.importScripts('shared.js');
 
 let api;
@@ -102,3 +105,5 @@ const onAnyMessage = async event => {
 };
 
 self.onmessage = onAnyMessage;
+
+*/

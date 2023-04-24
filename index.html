@@ -41,7 +41,42 @@
     <div id="layout"></div>
   </div>
   <script src="shared.js"></script>
-  <script src="shared_web.js"></script>
   <script src="web.js"></script>
 
 </body>
+
+
+
+<script>
+
+  const codiceProva =
+  `
+  #include <stdint.h>
+  #include <iostream>
+  
+  using namespace std;
+  
+  int main() {
+      int a = 50;
+      cout << a << endl;
+  }
+  `;
+  
+  
+  $('#run').on('click', event =>{
+    let api;
+    let currentApp;
+  
+    api = new API(apiOptions);
+  
+    console.log("compila");
+  
+  
+    currentApp = api.compileLinkRun(codiceProva); //vuole contents , il codice
+    console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
+
+
+    });
+    
+  
+  </script>
