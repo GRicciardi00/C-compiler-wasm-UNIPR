@@ -355,8 +355,7 @@ class App {
   }
 
   async run() {
-    term.write("> Running code ...");
-    term.write("\n");
+    
     await this.ready;
     //console.log("run di App: " + await this.ready)
     try {
@@ -696,16 +695,19 @@ class API {
 
   async hostLogAsync(message, promise) {
     const start = +new Date();
+    term.write(`> ${message}...`)
     this.hostLog(`${message}...`);  //ogni hostlogAsync è composto da un hostlog ed un a capi, se l'utente mette spunta su showtiming allora compare il tempo in verde (non ci interessa)
     const result = await promise;
     const end = +new Date();
     this.hostWrite(' done.');
+    term.write('done.')
     if (this.showTiming) {
       const green = '\x1b[92m';
       const normal = '\x1b[0m';
       this.hostWrite(` ${green}(${msToSec(start, end)}s)${normal}\n`);
     }
     this.hostWrite('\n');
+    term.write('\n')
     return result;
   }
 
@@ -741,7 +743,6 @@ class API {
   }
   async link(obj, wasm) {
     const stackSize = 1024 * 1024;
-
     const libdir = 'lib/wasm32-wasi';
     const crt1 = `${libdir}/crt1.o`;
     await this.ready;
