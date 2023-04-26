@@ -2,8 +2,6 @@
 
 La directory "original" contiene tutti i file originali (funzionanti) del compilatore.
 
-# Directory structure
-
 ## Shared utilities
 - `index.html`: contiene funzioni di shared_web e web.js (uniti per eliminare il worker).
 - `clang`: clang compiler, compiled to wasm w/ WASI
@@ -15,3 +13,10 @@ La directory "original" contiene tutti i file originali (funzionanti) del compil
 
 ## How to Run
 Lanciare da terminale: PyTHON -m http.server ed aprire localhost da browser.
+
+## To do
+- [x] Eliminare il worker
+- [ ] Sistemare Canvas senza worker
+- [ ] Implementare funzione personale su libreria canvas
+- [ ] Verificare se funziona scrittura su file
+- [ ] Implementare g2d
