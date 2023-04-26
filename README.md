@@ -17,6 +17,6 @@ Lanciare da terminale: PyTHON -m http.server ed aprire localhost da browser.
 ## To do
 - [x] Eliminare il worker
 - [ ] Sistemare Canvas senza worker
-- [ ] Implementare funzione personale su libreria canvas
+- [ ] Implementare funzione mydebug su libreria canvas
 - [ ] Verificare se funziona scrittura su file
 - [ ] Implementare g2d
