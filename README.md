@@ -1,6 +1,13 @@
-# Clang/LLD in WebAssembly
+# Compilatore c++ clang-wasm
 
 La directory "original" contiene tutti i file originali (funzionanti) del compilatore.
+
+## To do
+- [x] Eliminare il worker
+- [ ] Sistemare Canvas senza worker
+- [ ] Implementare funzione mydebug su libreria canvas
+- [ ] Verificare se funziona scrittura su file
+- [ ] Implementare g2d
 
 ## Shared utilities
 - `index.html`: contiene funzioni di shared_web e web.js (uniti per eliminare il worker).
@@ -14,9 +21,3 @@ La directory "original" contiene tutti i file originali (funzionanti) del compil
 ## How to Run
 Lanciare da terminale: PyTHON -m http.server ed aprire localhost da browser.
 
-## To do
-- [x] Eliminare il worker
-- [ ] Sistemare Canvas senza worker
-- [ ] Implementare funzione mydebug su libreria canvas
-- [ ] Verificare se funziona scrittura su file
-- [ ] Implementare g2d
