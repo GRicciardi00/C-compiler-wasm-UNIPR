@@ -145,7 +145,7 @@ class Memory {
   }
 };
 
-class MemFS {
+class MemFS { //In memory file systems
   constructor(options) {
     const compileStreaming = options.compileStreaming;
     this.hostWrite = options.hostWrite;
@@ -583,7 +583,7 @@ class App {
   }
 }
 
-class Tar {
+class Tar {   //classe per gestione archivio systroot.tar che gestisce le librerie c++
   constructor(buffer) {
     this.u8 = new Uint8Array(buffer);
     this.offset = 0;
@@ -642,12 +642,12 @@ class Tar {
     return entry;
   }
 
-  untar(memfs) {
+  untar(memfs) {  //chiamato per estrarre sysroot.tar nella classe API, aggiunge file a memfs
     let entry;
     while (entry = this.readEntry()) {
       switch (entry.type) {
       case '0': // Regular file.
-        memfs.addFile(entry.filename, entry.contents);
+        memfs.addFile(entry.filename, entry.contents); 
         break;
       case '5':
         memfs.addDirectory(entry.filename);
@@ -719,10 +719,10 @@ class API {
     return module;
   }
 
-  async untar(memfs, filename) {
+  async untar(memfs, filename) {    //untar della classe APP
     await this.memfs.ready;
     const promise = (async () => {
-      const tar = new Tar(await this.readBuffer(filename));
+      const tar = new Tar(await this.readBuffer(filename)); //filename = sysroot.tar
       tar.untar(this.memfs);
     })();
     await this.hostLogAsync(`Untarring ${filename}`, promise);
