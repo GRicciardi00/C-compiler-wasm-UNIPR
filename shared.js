@@ -587,12 +587,15 @@ class Tar {   //classe per gestione archivio systroot.tar che gestisce le librer
   constructor(buffer) {
     this.u8 = new Uint8Array(buffer);
     this.offset = 0;
+    console.log("u8" + this.u8.length)
   }
 
   readStr(len) {
     const result = readStr(this.u8, this.offset, len);
     this.offset += len;
+    //console.log(result);
     return result;
+
   }
 
   readOctal(len) {
@@ -636,7 +639,7 @@ class Tar {   //classe per gestione archivio systroot.tar che gestisce le librer
       this.offset += entry.size;
       this.alignUp();
     } else if (entry.type !== '5') { // Directory.
-      console.log('type', entry.type);
+      //console.log('type', entry.type);
       assert(false);
     }
     return entry;
@@ -645,6 +648,7 @@ class Tar {   //classe per gestione archivio systroot.tar che gestisce le librer
   untar(memfs) {  //chiamato per estrarre sysroot.tar nella classe API, aggiunge file a memfs
     let entry;
     while (entry = this.readEntry()) {
+      //console.log("entry = " + entry)
       switch (entry.type) {
       case '0': // Regular file.
         memfs.addFile(entry.filename, entry.contents); 
@@ -661,6 +665,8 @@ class API {
   constructor(options) {
     this.moduleCache = {};
     this.readBuffer = options.readBuffer;
+    //console.log("options: " + options);
+    //console.log("readbuffer: " + this.readBuffer);
     this.compileStreaming = options.compileStreaming;
     this.hostWrite = options.hostWrite;
     this.clangFilename = options.clang || 'clang';
@@ -723,6 +729,7 @@ class API {
     await this.memfs.ready;
     const promise = (async () => {
       const tar = new Tar(await this.readBuffer(filename)); //filename = sysroot.tar
+
       tar.untar(this.memfs);
     })();
     await this.hostLogAsync(`Untarring ${filename}`, promise);
