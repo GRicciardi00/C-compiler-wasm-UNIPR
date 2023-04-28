@@ -253,7 +253,7 @@ class MemFS { //In memory file systems
 
   memfs_log(buf, len) {
     this.mem.check();
-    console.log(this.mem.readStr(buf, len));
+    //console.log(this.mem.readStr(buf, len));
   }
 
   copy_out(clang_dst, memfs_src, size) {
@@ -502,7 +502,7 @@ class App {
   }
 
   // Other Canvas methods.
-  mydebug(...args){if (ctx2d){ ctx2d.debug(...args); console.log("test");} } //implemento mydebug() come una funziona che chiama debug()
+  mydebug(...args){ console.log("EUREKA!"); } //implemento mydebug() come una funziona che chiama debug()
 
   canvas_arc(...args) { if (ctx2d) ctx2d.arc(...args); }
   canvas_arcTo(...args) { if (ctx2d) ctx2d.arcTo(...args); }
@@ -587,7 +587,7 @@ class Tar {   //classe per gestione archivio systroot.tar che gestisce le librer
   constructor(buffer) {
     this.u8 = new Uint8Array(buffer);
     this.offset = 0;
-    console.log("u8" + this.u8.length)
+    //console.log("u8" + this.u8.length)
   }
 
   readStr(len) {
