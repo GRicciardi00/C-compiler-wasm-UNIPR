@@ -144,7 +144,9 @@
   
   let wind;
   let canvas;
+  let ctx2d;
   function CanvasComponent(container, state) {
+    //console.log("canvasComponent") OK
     const canvasEl = document.createElement('canvas');
     canvasEl.className = 'canvas';
     container.getElement()[0].appendChild(canvasEl);
@@ -152,21 +154,26 @@
     // it's trickier than I thought to handle things like rAF. I also don't think
     // it's possible to handle ctx2d.measureText.
     if (canvasEl.transferControlToOffscreen) {
-      //api.postCanvas(canvasEl.transferControlToOffscreen());
+      //console.log("if");
+      canvas = canvasEl.transferControlToOffscreen();
+      ctx2d = canvas.getContext('2d');
     } else {
+      //console.log("else");
       const w = 800;
       const h = 600;
       canvasEl.width = w;
       canvasEl.height = h;
       wind = window;
-      const ctx2d = canvasEl.getContext('2d');
+      ctx2d = canvasEl.getContext('2d');
       const msg = 'offscreenCanvas is not supported :(';
       ctx2d.font = 'bold 35px sans';
       ctx2d.fillStyle = 'black';
       const x = (w - ctx2d.measureText(msg).width) / 2;
       const y = (h + 20) / 2;
       ctx2d.fillText(msg, x, y);
+      //console.log(ctx2d); 
     }
+    //console.log(ctx2d);
   }
 
     
@@ -251,6 +258,7 @@ int main() {
 let layout = null;
 
 function initLayout() {
+  //console.log("INIT LAYOUT") OK
   const defaultLayoutConfig = {
     settings: {
       showCloseIcon: false,

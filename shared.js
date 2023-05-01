@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+
 function sleep(ms) {
   return new Promise((resolve, _) => setTimeout(resolve, ms));
 }
@@ -475,6 +477,7 @@ class App {
   }
 
   // ImageData stuff
+  
   canvas_createImageData(w, h) {
     if (ctx2d) {
       const imageData = ctx2d.createImageData(w, h);
@@ -501,9 +504,8 @@ class App {
     }
   }
 
+  mydebug() {console.log("EUREKA!")}
   // Other Canvas methods.
-  mydebug(...args){ console.log("EUREKA!"); } //implemento mydebug() come una funziona che chiama debug()
-
   canvas_arc(...args) { if (ctx2d) ctx2d.arc(...args); }
   canvas_arcTo(...args) { if (ctx2d) ctx2d.arcTo(...args); }
   canvas_beginPath(...args) { if (ctx2d) ctx2d.beginPath(...args); }

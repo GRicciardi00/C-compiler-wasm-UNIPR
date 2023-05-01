@@ -4,8 +4,8 @@ La directory "original" contiene tutti i file originali (funzionanti) del compil
 
 ## To do
 - [x] Eliminare il worker
-- [ ] Sistemare Canvas senza worker
-- [ ] Implementare funzione mydebug su libreria canvas
+- [x] Sistemare Canvas senza worker
+- [x] Implementare funzione mydebug su libreria canvas
 - [ ] Verificare se funziona scrittura su file
 - [ ] Implementare g2d
 
