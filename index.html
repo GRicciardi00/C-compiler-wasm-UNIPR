@@ -29,14 +29,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/fit/fit.min.js"></script>
   <div id="all" class="horiz">
     <div class="toolbar-left">
-      <button id="run">run</button>
-      <button id="open">open</button>
+      <button id="run">Compile and Run</button>
+      <button id="btnDownload" onclick = "downloadFile()">Download</button>
+      <!--<button id="open">Open extern file</button>-->
       <input id="openInput" type="file" hidden>
       <input id="showTiming" type="checkbox">
       <label for="showTiming">tempo</label>
     </div>
     <div class="toolbar-right">
-      <button id="reset">reset</button>
+      <button id="Reset">reset</button>
     </div>
     <div id="layout"></div>
   </div>
@@ -48,6 +49,9 @@
 
 <script>
   const LAYOUT_CONFIG_KEY = 'layoutConfig';
+
+  let codiceSave = "default";
+  document.getElementById("btnDownload").disabled = true;
 
   //  **** SHARED_WEB.JS ****
   window.addEventListener('beforeunload', event => {
@@ -367,6 +371,46 @@ initLayout();
     api = new API(apiOptions);
   
     run(editor.getValue(), api);
+    codiceSave = editor.getValue();
+    document.getElementById("btnDownload").disabled = false;
+
   });
+
+  const downloadFile = () => {
+         const link = document.createElement("a");
+         const content = codiceSave;
+         const file = new Blob([content], { type: 'text/plain' });
+         link.href = URL.createObjectURL(file);
+         link.download = "file.cpp";
+         link.click();
+         URL.revokeObjectURL(link.href);
+      };
+
+  /*
+  (function () {
+    var textFile = null,
+      makeTextFile = function (text) {
+        var data = new Blob([text], {type: 'text/plain'});
+
+        // If we are replacing a previously generated file we need to
+        // manually revoke the object URL to avoid memory leaks.
+        if (textFile !== null) {
+          window.URL.revokeObjectURL(textFile);
+        }
+
+        textFile = window.URL.createObjectURL(data);
+
+        return textFile;
+      };
+
+      var create = document.getElementById('run'),
+        textbox = editor.getValue();
+
+      create.addEventListener('click', function () {
+        var link = document.getElementById('downloadlink');
+        link.href = makeTextFile(textbox.value);
+        link.style.display = 'block';
+      }, false);
+    })();*/
     
   </script>
