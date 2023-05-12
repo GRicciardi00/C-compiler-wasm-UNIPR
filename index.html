@@ -48,6 +48,26 @@
 
 
 <script>
+  function replaceCinWithString(inputString) {
+  const regex = /cin\s*>>\s*(\w+)/g;
+  let match = regex.exec(inputString);
+  while (match !== null) {
+    const variableName = match[1]; //match[0] = ">>"
+    let input = null;
+    while (input === null) {
+      input = prompt(`Enter a value for ${variableName}: `);
+      if (input === null) {
+        const shouldCancel = confirm('Do you want to cancel input for this variable?');
+        if (shouldCancel) {
+          return null;
+        }
+      }
+    }
+    inputString = inputString.replace(match[0], `${variableName}=${input}`);
+    match = regex.exec(inputString);
+  }
+  return inputString;
+}
   const LAYOUT_CONFIG_KEY = 'layoutConfig';
 
   let codiceSave = "default";
@@ -364,13 +384,15 @@ initLayout();
       console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
     }
   
-  $('#run').on('click', event =>{
+    $('#run').on('click', event =>{
     let api;
     let currentApp;
 
     let edit = "";
 
     if(editor.getValue().includes("cin")){
+      let newEditor = replaceCinWithString(editor.getValue());
+        /*
         let input = prompt("inserisci valore");
         console.log(editor.getValue());
 
@@ -385,10 +407,9 @@ initLayout();
         }
         let newEditor = myArray.join(" ");
         //editor.setValue(newEditor);
-
+        */
         edit = newEditor;
-
-        console.log(newEditor);
+        console.log(edit);
     }
     else{
       edit = editor.getValue();
