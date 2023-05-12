@@ -367,10 +367,36 @@ initLayout();
   $('#run').on('click', event =>{
     let api;
     let currentApp;
-  
+
+    let edit = "";
+
+    if(editor.getValue().includes("cin")){
+        let input = prompt("inserisci valore");
+        console.log(editor.getValue());
+
+        const myArray = editor.getValue().split(" ");
+        var length = myArray.length;
+        for (var i = 0; i < length; i++) {
+            if(myArray[i] == "cin"){
+              myArray[i] = myArray[i+2].slice(0, 1);
+              myArray[i+1] = "=";
+              myArray[i+2] = input.concat(";");
+            }
+        }
+        let newEditor = myArray.join(" ");
+        //editor.setValue(newEditor);
+
+        edit = newEditor;
+
+        console.log(newEditor);
+    }
+    else{
+      edit = editor.getValue();
+    }
+    
     api = new API(apiOptions);
   
-    run(editor.getValue(), api);
+    run(edit, api);
     codiceSave = editor.getValue();
     document.getElementById("btnDownload").disabled = false;
 
