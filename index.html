@@ -48,6 +48,26 @@
 
 
 <script>
+  function replaceCinWithString(inputString) {
+  const regex = /cin\s*>>\s*(\w+)/g;
+  let match = regex.exec(inputString);
+  while (match !== null) {
+    const variableName = match[1]; //match[0] = ">>"
+    let input = null;
+    while (input === null) {
+      input = prompt(`Enter a value for ${variableName}: `);
+      if (input === null) {
+        const shouldCancel = confirm('Do you want to cancel input for this variable?');
+        if (shouldCancel) {
+          return null;
+        }
+      }
+    }
+    inputString = inputString.replace(match[0], `${variableName}=${input}`);
+    match = regex.exec(inputString);
+  }
+  return inputString;
+}
   const LAYOUT_CONFIG_KEY = 'layoutConfig';
 
   let codiceSave = "default";
@@ -135,6 +155,7 @@
       term = new Terminal({convertEol: true, disableStdin: true, fontSize});
       term.open(container.getElement()[0]);
       setFontSize(fontSize);
+      term.write("\u00A92023 Giuseppe Ricciardi and Giovanni Schianchi, UNIPR\n");
     });
     container.on('fontSizeChanged', setFontSize);
     container.on('resize', debounceLazy(() => term.fit(), 20));
@@ -316,7 +337,7 @@ function resetLayout() {
 }
 
 // Toolbar stuff
-$('#reset').on('click', event => { if (confirm('Confermi il reset ?')) resetLayout() });
+$('#Reset').on('click', event => { if (confirm('Confermi il reset ?')) resetLayout() });
 //$('#run').on('click', event => run(editor));
 
 
@@ -367,13 +388,23 @@ initLayout();
   $('#run').on('click', event =>{
     let api;
     let currentApp;
-  
+
+    let edit = "";
+
+    if(editor.getValue().includes("cin")){
+      let newEditor = replaceCinWithString(editor.getValue());
+      edit = newEditor;
+      console.log(edit);
+    }
+    else{
+      edit = editor.getValue();
+    }
+    
     api = new API(apiOptions);
   
-    run(editor.getValue(), api);
+    run(edit, api);
     codiceSave = editor.getValue();
     document.getElementById("btnDownload").disabled = false;
-
   });
 
   const downloadFile = () => {

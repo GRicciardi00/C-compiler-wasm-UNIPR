@@ -650,7 +650,7 @@ class Tar {   //classe per gestione archivio systroot.tar che gestisce le librer
   untar(memfs) {  //chiamato per estrarre sysroot.tar nella classe API, aggiunge file a memfs
     let entry;
     while (entry = this.readEntry()) {
-      console.log("entry = " + entry.filename)
+      //console.log("entry = " + entry.filename)
       switch (entry.type) {
       case '0': // Regular file.
         memfs.addFile(entry.filename, entry.contents); 
