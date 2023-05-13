@@ -1,7 +1,7 @@
 #ifndef G2D_H_
 #define G2D_H_
 
-#include "basic.hpp"
+#include <basic.h>
 #include <functional>
 #include <set>
 #include <sstream>
@@ -23,23 +23,23 @@ namespace g2d {
     static auto o0_ = [] { cout << 0; cout.str(""); return 0; } ();
 
     extern "C" void js_init_canvas(double w, double h){return;};
-    extern "C" void js_close_canvas();
-    extern "C" void js_set_color(double r, double g, double b);
-    extern "C" void js_set_timeout(double fps);
-    extern "C" double js_width();
-    extern "C" double js_height();
-    extern "C" void js_clear_rect(double x, double y, double width, double height);
-    extern "C" void js_fill_rect(double x, double y, double width, double height);
-    extern "C" void js_fill_circle(double x, double y, double r);
-    extern "C" void js_load_element(const char * tag, const char * src);
-    extern "C" void js_draw_image(const char * src, double x, double y);
-    extern "C" void js_draw_image_clip(const char * src, double x, double y, double x0, double y0, double w, double h);
-    extern "C" void js_draw_text(const char * txt, double x, double y, double size, char * baseline, char * align);
-    extern "C" void js_play_audio(const char * src, double loop);
-    extern "C" void js_pause_audio(const char * src);
-    extern "C" void js_alert(const char * txt);
-    extern "C" bool js_confirm(const char * txt);
-    extern "C" void js_prompt(const char * txt, char * ans, int len);
+    extern "C" void js_close_canvas(){return;};
+    extern "C" void js_set_color(double r, double g, double b){return;};
+    extern "C" void js_set_timeout(double fps){return;};
+    extern "C" double js_width(){return;};
+    extern "C" double js_height(){return;};
+    extern "C" void js_clear_rect(double x, double y, double width, double height){return;};
+    extern "C" void js_fill_rect(double x, double y, double width, double height){return;};
+    extern "C" void js_fill_circle(double x, double y, double r){return;};
+    extern "C" void js_load_element(const char * tag, const char * src){return;};
+    extern "C" void js_draw_image(const char * src, double x, double y){return;};
+    extern "C" void js_draw_image_clip(const char * src, double x, double y, double x0, double y0, double w, double h){return;};
+    extern "C" void js_draw_text(const char * txt, double x, double y, double size, char * baseline, char * align){return;};
+    extern "C" void js_play_audio(const char * src, double loop){return;};
+    extern "C" void js_pause_audio(const char * src){return;};
+    extern "C" void js_alert(const char * txt){return;};
+    extern "C" bool js_confirm(const char * txt){return;};
+    extern "C" void js_prompt(const char * txt, char * ans, int len){return;};
 
     extern "C" const char * cpp_cout() {
         strncpy(cout_buffer_, cout.str().c_str(), cout_size_-1);
@@ -124,4 +124,4 @@ namespace g2d {
 
 }
 
-#endif // G2DCANVAS_HPP
+#endif // G2D_H_

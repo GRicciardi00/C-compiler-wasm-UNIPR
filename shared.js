@@ -337,7 +337,7 @@ class App {
       'canvas_strokeText',
       'canvas_transform',
       'canvas_translate',
-      'init_canvas',
+      'mydebug',
     ]);
 
     const wasi_unstable = getImportObject(this, [
@@ -504,7 +504,7 @@ class App {
     }
   }
 
-  init_canvas() {console.log("EUREKA!")}
+  mydebug() {console.log("EUREKA!")}
   // Other Canvas methods.
   canvas_arc(...args) { if (ctx2d) ctx2d.arc(...args); }
   canvas_arcTo(...args) { if (ctx2d) ctx2d.arcTo(...args); }
@@ -760,7 +760,7 @@ class API {
         lld, 'wasm-ld', '--no-threads',
         '--export-dynamic',  // TODO required?
         '-z', `stack-size=${stackSize}`, `-L${libdir}`, crt1, obj, '-lc',
-        '-lc++', '-lc++abi', '-lcanvas', '-o', wasm)
+        '-lc++', '-lc++abi', '-lcanvas','-lg2d', '-o', wasm)
   }
 
   async run(module, ...args) {
