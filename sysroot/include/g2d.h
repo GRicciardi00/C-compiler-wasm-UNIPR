@@ -125,3 +125,4 @@ namespace g2d {
 }
 
 #endif // G2D_H_
+

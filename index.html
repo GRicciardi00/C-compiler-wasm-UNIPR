@@ -347,6 +347,7 @@ initLayout();
   const apiOptions = {
       async readBuffer(filename) {
         const response = await fetch(filename);
+        //console.log(filename);
         return response.arrayBuffer();
       },
       async compileStreaming(filename) {
@@ -392,7 +393,7 @@ initLayout();
     if(editor.getValue().includes("cin")){
       let newEditor = replaceCinWithString(editor.getValue());
       edit = newEditor;
-      console.log(edit);
+      //console.log(edit);
     }
     else{
       edit = editor.getValue();

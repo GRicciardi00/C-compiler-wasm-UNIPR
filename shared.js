@@ -14,8 +14,38 @@
  * limitations under the License.
  */
 
+//G2D.js global
+let loaded = {}
+let keyCodes = {"Up": "ArrowUp", "Down": "ArrowDown",
+                  "Left": "ArrowLeft", "Right": "ArrowRight",
+                  " ": "Spacebar", "Space": "Spacebar",
+                  "Esc": "Escape", "Del": "Delete"}
+let mouseCodes = ["LeftButton", "MiddleButton", "RightButton"];
+let timeout = 0;
+function loadElement(tag, src) {
+  var elem = loaded[src];
+  if (elem) return elem;
+  elem = document.createElement(tag);
+  elem.src = src;
+  elem.onerror = () => {
+      if (!elem.src.startsWith("https://raw.github")) {
+          elem.src = "https://raw.githubusercontent.com/tomamic/fondinfo/master/examples/" + src;
+      }
+  }
+  loaded[src] = elem;
+  return elem;
+}
+let canvas_g2d = document.getElementById('g2d-canvas');
+if (!canvas_g2d) {
+    //console.log("aaa");
+    canvas_g2d = document.createElement('CANVAS');
+    canvas_g2d.id = 'g2d-canvas';
+    canvas_g2d.style.display = 'none';
+    document.body.insertBefore(canvas_g2d, document.body.firstChild);
+}
+let ctx = canvas_g2d.getContext('2d');
 
-
+//SHARED.JS
 function sleep(ms) {
   return new Promise((resolve, _) => setTimeout(resolve, ms));
 }
@@ -338,6 +368,24 @@ class App {
       'canvas_transform',
       'canvas_translate',
       'mydebug',
+      'js_alert',
+      'js_prompt',
+      'js_confirm',
+      'js_load_element',
+      'js_eval',
+      'js_init_canvas',
+      'js_close_canvas',
+      'js_set_timeout',
+      'js_clear_rect',
+      'js_draw_line',
+      'js_set_color',
+      'js_fill_circle',
+      'js_fill_rect',
+      'js_draw_text',
+      'js_draw_image',
+      'js_draw_image_clip',
+      'js_play_audio',
+      'js_pause_audio',
     ]);
 
     const wasi_unstable = getImportObject(this, [
@@ -462,7 +510,72 @@ class App {
   canvas_destroyHandle(handle) {
     this.handles.delete(handle);
   }
-
+  //G2D
+  js_alert(txt) { alert(emModule.UTF8ToString(txt)); }
+    js_prompt(txt, ans, len) {
+        let ansStr = prompt(emModule.UTF8ToString(txt));
+        emModule.stringToUTF8(ansStr, ans, len);
+    }
+  js_confirm(txt) {
+        return confirm(emModule.UTF8ToString(txt));
+    }
+  js_load_element(tag, src) { loadElement(emModule.UTF8ToString(tag), emModule.UTF8ToString(src)); }
+  js_eval(code) { eval(emModule.UTF8ToString(code)); }
+  js_init_canvas(w, h) {
+      console.log("Init canvas");
+      canvas_g2d.width = w;
+      canvas_g2d.height = h;
+      canvas_g2d.style.display = 'block';
+      canvas_g2d.style.border = '1px solid silver';
+    }
+  
+    js_close_canvas() {
+        js_clear_rect(0, 0, canvas_g2d.width, canvas_g2d.height);
+        if (timeout) { clearTimeout(timeout); }
+    }
+    js_set_timeout(fps) {
+        //timeout = setTimeout("env.xsjs_set_timeout("+fps+")", 1000/fps);
+        /*if (wasmExports.cpp_tick) {
+            requestAnimationFrame(wasmExports.cpp_tick);
+        }*/
+    }
+    js_clear_rect(ctx){ctx.clearRect.bind(ctx)}
+    js_draw_line(x1, y1, x2, y2) {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+    js_set_color(r, g, b) {
+        ctx.strokeStyle = "rgb(" + r + "," + g + "," + b + ")";
+        ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+    }
+    js_fill_circle(x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.fill();
+    }
+    js_fill_rect(ctx){if (ctx) ctx.fillRect.bind(ctx)}
+    js_draw_text(txt, x, y, size, baseline, align) {
+        ctx.font = 'sans-serif ' + size + 'px';
+        ctx.textBaseline = emModule.UTF8ToString(baseline);
+        ctx.textAlign = emModule.UTF8ToString(align);
+        ctx.fillText(emModule.UTF8ToString(txt), x, y);
+    }
+    js_draw_image(src, x, y) {
+        var elem = loadElement(`IMG`, emModule.UTF8ToString(src));
+        ctx.drawImage(elem, x, y);
+    }
+    js_draw_image_clip(src, x, y, x0, y0, w, h) {
+        var elem = loadElement(`IMG`, emModule.UTF8ToString(src));
+        ctx.drawImage(elem, x0, y0, w, h, x, y, w, h);
+    }
+    js_play_audio(src, loop) {
+        var elem = loadElement(`AUDIO`, emModule.UTF8ToString(src));
+        elem.loop = (loop != 0);
+        elem.play();
+    }
+    js_pause_audio(src) {
+        loadElement(`AUDIO`, emModule.UTF8ToString(src)).pause();
+    }
   // Canvas API
   canvas_setWidth(width) { if (canvas) canvas.width = width; }
   canvas_setHeight(height) { if (canvas) canvas.height = height; }
@@ -503,7 +616,7 @@ class App {
       imageData.data.set(src, offset);
     }
   }
-
+  js_alert(text) {console.log(text)}
   mydebug() {console.log("EUREKA!")}
   // Other Canvas methods.
   canvas_arc(...args) { if (ctx2d) ctx2d.arc(...args); }
@@ -756,11 +869,12 @@ class API {
     const crt1 = `${libdir}/crt1.o`;
     await this.ready;
     const lld = await this.getModule(this.lldFilename);
+    //console.log(this.lldFilename);
     return await this.run(
         lld, 'wasm-ld', '--no-threads',
         '--export-dynamic',  // TODO required?
         '-z', `stack-size=${stackSize}`, `-L${libdir}`, crt1, obj, '-lc',
-        '-lc++', '-lc++abi', '-lcanvas','-lg2d', '-o', wasm)
+        '-lc++', '-lc++abi', '-lcanvas','-lg2d' ,'-o', wasm)
   }
 
   async run(module, ...args) {
