@@ -182,8 +182,8 @@
       ctx2d = canvas.getContext('2d');
     } else {
       //console.log("else");
-      const w = 800;
-      const h = 600;
+      const w = 0;
+      const h = 0;
       canvasEl.width = w;
       canvasEl.height = h;
       wind = window;
@@ -380,7 +380,6 @@ initLayout();
       // Stop running rAF on the previous app, if any.
       currentApp.allowRequestAnimationFrame = false;
     }
-      
       console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
     }
   
@@ -398,9 +397,7 @@ initLayout();
     else{
       edit = editor.getValue();
     }
-    
     api = new API(apiOptions);
-  
     run(edit, api);
     codiceSave = editor.getValue();
     document.getElementById("btnDownload").disabled = false;

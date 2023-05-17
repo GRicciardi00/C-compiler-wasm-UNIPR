@@ -349,41 +349,20 @@ extern "C"{
     bool js_confirm(const char * txt);
     void js_prompt(const char * txt, char * ans, int len);
 
-    const char * cpp_cout() {
-        strncpy(cout_buffer_, cout.str().c_str(), cout_size_-1);
-        cout_buffer_[cout_size_] = 0;
-        return cout_buffer_;
-
-        auto str = cout.str();
-        auto txt = str.substr(0, cout_size_-1);
-        if (txt.back() & 0x80 == 0x80) {
-            while (txt.back() & 0xC0 == 0x80) txt.pop_back();
-            txt.pop_back();
-        }
-        strncpy(cout_buffer_, txt.c_str(), txt.size()+1);
-        cout.str(str.erase(0, txt.size()));
-        return cout_buffer_;
-    }
-    char * cpp_key_buffer() {
-        return key_buffer_;
-    }
-    void cpp_keydown() {
-        current_keys_.insert(key_buffer_);
-    }
-    void cpp_keyup() {
-        current_keys_.erase(key_buffer_);
-    }
-    void cpp_mousemove(double x, double y) {
-        mouse_pos_ = {x, y};
-    }
-    void cpp_tick() {
-        if (usr_tick_ != nullptr) {
-            usr_tick_();
-        }
-        previous_keys_ = current_keys_;
-    }
+    
  }
 namespace g2d { 
+      void main_loop() { }
+      void main_loop(void (*tick)(), int fps=30) {
+        fps_ = fps;
+        usr_tick_ = std::function<void()>(tick);
+        js_set_timeout(fps);
+    }
+      void main_loop(std::function<void()> tick, int fps=30) {
+        fps_ = fps;
+        usr_tick_ = tick;
+        js_set_timeout(fps);
+    }
     void init_canvas(Point p) { size_ = p; js_init_canvas(p.x, p.y); }
     void close_canvas() { js_close_canvas(); }
     void clear_canvas() { js_clear_rect(0, 0, size_.x, size_.y); }
@@ -419,20 +398,48 @@ namespace g2d {
     std::set<std::string> current_keys() { return current_keys_; }
     std::set<std::string> previous_keys() { return previous_keys_; }
 
-    void main_loop() { }
-    void main_loop(void (*tick)(), int fps=30) {
-        fps_ = fps;
-        usr_tick_ = std::function<void()>(tick);
-        js_set_timeout(fps);
-    }
-    void main_loop(std::function<void()> tick, int fps=30) {
-        fps_ = fps;
-        usr_tick_ = tick;
-        js_set_timeout(fps);
-    }
 
 }
+#define WASM_EXPORT __attribute__((__visibility__("default")))
+  extern "C" WASM_EXPORT const char * cpp_cout() {
+        strncpy(cout_buffer_, cout.str().c_str(), cout_size_-1);
+        cout_buffer_[cout_size_] = 0;
+        return cout_buffer_;
+
+        auto str = cout.str();
+        auto txt = str.substr(0, cout_size_-1);
+        if (txt.back() & 0x80 == 0x80) {
+            while (txt.back() & 0xC0 == 0x80) txt.pop_back();
+            txt.pop_back();
+        }
+        strncpy(cout_buffer_, txt.c_str(), txt.size()+1);
+        cout.str(str.erase(0, txt.size()));
+        return cout_buffer_;
+    }
+    extern "C" WASM_EXPORT char * cpp_key_buffer() {
+        return key_buffer_;
+    }
+    extern "C" WASM_EXPORT void cpp_keydown() {
+        current_keys_.insert(key_buffer_);
+    }
+    extern "C" WASM_EXPORT void cpp_keyup() {
+        current_keys_.erase(key_buffer_);
+    }
+    extern "C" WASM_EXPORT void cpp_mousemove(double x, double y) {
+        mouse_pos_ = {x, y};
+    }
+    extern "C" WASM_EXPORT void cpp_tick() {
+        if (usr_tick_ != nullptr) {
+            usr_tick_();
+        }
+        previous_keys_ = current_keys_;
+    }
+#undef WASM_EXPORT
+
 #endif // CANVAS_H_
+
+
+
 
 
 
