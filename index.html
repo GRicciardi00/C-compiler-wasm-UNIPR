@@ -169,7 +169,9 @@
   let canvas;
   let ctx2d;
   function CanvasComponent(container, state) {
-    //console.log("canvasComponent") OK
+    var elem = document.getElementById("canvas");
+    if (elem) elem.parentNode.removeChild(elem);
+    console.log("canvasComponent")
     const canvasEl = document.createElement('canvas');
     canvasEl.className = 'canvas';
     container.getElement()[0].appendChild(canvasEl);
@@ -328,18 +330,25 @@ function initLayout() {
 function resetLayout() {
   localStorage.removeItem('layoutConfig');
   if (layout) {
+    console.log("Ok");
     layout.destroy();
     layout = null;
   }
   initLayout();
 }
 
-// Toolbar stuff
-$('#Reset').on('click', event => { if (confirm('Confermi il reset ?')) resetLayout() });
-//$('#run').on('click', event => run(editor));
+
 
 
 initLayout();
+
+// Toolbar stuff
+$('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
+  resetLayout();
+}
+});
+//$('#run').on('click', event => run(editor));
+
 // FINE WEB.JS
 
   const channel = new MessageChannel();
@@ -374,31 +383,22 @@ initLayout();
   };
 
       async function run(codice, api){
+
+    }
+  let currentApp;
+  async function run(codice, api){
       currentApp = await api.compileLinkRun(codice); //vuole contents , il codice
-      if (currentApp) {
+      console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
+    }
+  $('#run').on('click', async (event) =>{
+    if (currentApp) {
       console.log('First, disallowing rAF from previous app.');
       // Stop running rAF on the previous app, if any.
       currentApp.allowRequestAnimationFrame = false;
-    }
-      console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
-    }
-  
-  $('#run').on('click', event =>{
+      }
     let api;
-    let currentApp;
-
-    let edit = "";
-
-    if(editor.getValue().includes("cin")){
-      let newEditor = replaceCinWithString(editor.getValue());
-      edit = newEditor;
-      //console.log(edit);
-    }
-    else{
-      edit = editor.getValue();
-    }
     api = new API(apiOptions);
-    run(edit, api);
+    await run(editor.getValue(),api);
     codiceSave = editor.getValue();
     document.getElementById("btnDownload").disabled = false;
   });

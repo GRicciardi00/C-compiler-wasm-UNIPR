@@ -15,8 +15,7 @@
  */
 
 //G2D.js global
-
-var decoder = new TextDecoder('utf-8');
+let width_0 
 let loaded = {}
 let keyCodes = {"Up": "ArrowUp", "Down": "ArrowDown",
                   "Left": "ArrowLeft", "Right": "ArrowRight",
@@ -309,7 +308,7 @@ class App {
     this.allowRequestAnimationFrame = true;
     this.handles = new Map();
     this.nextHandle = 0;
-
+    this.js_close_canvas();
     const env = getImportObject(this, [
       'canvas_arc',
       'canvas_arcTo',
@@ -503,16 +502,16 @@ class App {
     this.handles.delete(handle);
   }
   //G2D
-  js_alert(txt) { alert(decoder.decode(txt.data)); }
-    js_prompt(txt, ans, len) {
-        let ansStr = prompt(decoder.decode(txt));
-        emModule.stringToUTF8(ansStr, ans, len);
+  js_alert(txt) { alert(this.mem.readStr(txt)); }
+  js_prompt(txt, ans, len) {
+        let ansStr = prompt(this.mem.readStr(txt));
+        this.mem.writeStr(ans, ansStr);
     }
   js_confirm(txt) {
-        return confirm(decoder.decode(txt));
+        return confirm(this.mem.readStr(txt));
     }
-  js_load_element(tag, src) { loadElement(decoder.decode(tag), decoder.decode(src)); }
-  js_eval(code) { eval(decoder.decode(code)); }
+  js_load_element(tag, src) { loadElement(this.mem.readStr(tag), this.mem.readStr(src)); }
+  js_eval(code) { eval(this.mem.readStr(code)); }
   js_init_canvas(w, h) {
       canvas.width = w;
       canvas.height = h;
@@ -524,11 +523,13 @@ class App {
     }
     
     js_set_timeout(fps) {
+      let width_0 = canvas.width;
       const ms = Math.floor(1000 / fps);
       setTimeout(() => {
         if (this.allowRequestAnimationFrame) {
           this.exports.cpp_tick();
           this.js_set_timeout(fps);
+          if (canvas.width != width_0) this.allowRequestAnimationFrame = false;
         }
       }, ms);
     }
@@ -549,26 +550,26 @@ class App {
     js_fill_rect(...args){if (ctx2d) ctx2d.fillRect(...args)}
     js_draw_text(txt, x, y, size, baseline, align) {
         ctx2d.font = 'sans-serif ' + size + 'px';
-        ctx2d.textBaseline = decoder.decode(baseline);
-        ctx2d.textAlign = decoder.decode(align);
-        ctx2d.fillText(decoder.decode(txt), x, y);
+        ctx2d.textBaseline = this.mem.readStr(baseline);
+        ctx2d.textAlign = this.mem.readStr(align);
+        ctx2d.fillText(this.mem.readStr(txt), x, y);
     }
     js_draw_image(src, x, y) {
         console.log("draw image");
-        var elem = loadElement(`IMG`, decoder.decode(src));
+        var elem = loadElement(`IMG`, this.mem.readStr(src));
         ctx2d.drawImage(elem, x, y);
     }
     js_draw_image_clip(src, x, y, x0, y0, w, h) {
-        var elem = loadElement(`IMG`, decoder.decode(src));
+        var elem = loadElement(`IMG`, this.mem.readStr(src));
         ctx2d.drawImage(elem, x0, y0, w, h, x, y, w, h);
     }
     js_play_audio(src, loop) {
-        var elem = loadElement(`AUDIO`, decoder.decode(src));
+        var elem = loadElement(`AUDIO`, this.mem.readStr(src));
         elem.loop = (loop != 0);
         elem.play();
     }
     js_pause_audio(src) {
-        loadElement(`AUDIO`, decoder.decode(src)).pause();
+        loadElement(`AUDIO`, this.mem.readStr(src)).pause();
     }
   // Canvas API
   canvas_setWidth(width) { if (canvas) canvas.width = width; }
@@ -887,7 +888,6 @@ class API {
       msg += `/${msToSec(instantiate, end)}s)${normal}\n`;
       this.hostWrite(msg);
     }
-
     return stillRunning ? app : null; //ritorna il risultato del metodo run della classe app
   }
 
