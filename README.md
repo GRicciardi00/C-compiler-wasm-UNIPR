@@ -11,4 +11,5 @@ Based on https://github.com/binji/wasm-clang project.
 - `sysroot.tar`: C++ standard headers and libraries (includes the g2d library)
 ## How to Run
 (Currently working well on Google Chrome) <br />
-Host the site using python from terminal, launching "PyTHON -m http.server" or try it directly using this link: https://gricciardi00.github.io/Cpp-compiler-wasm-UNIPR/
+Host the site using python from terminal, launching "PyTHON -m http.server". <br />
+You can also try it directly using this link: https://gricciardi00.github.io/Cpp-compiler-wasm-UNIPR/
