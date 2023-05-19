@@ -396,7 +396,6 @@ class App {
   }
 
   async run() {
-    
     await this.ready;
     //console.log("run di App: " + await this.ready)
     try {
@@ -529,7 +528,12 @@ class App {
         if (this.allowRequestAnimationFrame) {
           this.exports.cpp_tick();
           this.js_set_timeout(fps);
-          if (canvas.width != width_0) this.allowRequestAnimationFrame = false;
+          // GESTIONE MANUALE DEL RESET:
+          //se utente chiama reset il canvas ritorna alla dimensione default che è diversa da quella settata dall'utente
+          //ferma animazione e pulisci canvas.
+          if (canvas.width != width_0) {
+            this.allowRequestAnimationFrame = false; 
+            ctx2d.clearRect(0,0,canvas.width,canvas.height);}; 
         }
       }, ms);
     }
@@ -555,7 +559,6 @@ class App {
         ctx2d.fillText(this.mem.readStr(txt), x, y);
     }
     js_draw_image(src, x, y) {
-        console.log("draw image");
         var elem = loadElement(`IMG`, this.mem.readStr(src));
         ctx2d.drawImage(elem, x, y);
     }

@@ -180,7 +180,7 @@
     // it's possible to handle ctx2d.measureText.
     if (canvasEl.transferControlToOffscreen) {
       //console.log("if");
-      canvas = canvasEl.transferControlToOffscreen();
+      canvas = canvasEl;
       ctx2d = canvas.getContext('2d');
     } else {
       //console.log("else");
@@ -389,7 +389,56 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
   async function run(codice, api){
       currentApp = await api.compileLinkRun(codice); //vuole contents , il codice
       console.log(`finished compileLinkRun. currentApp = ${currentApp}.`);
+      if (currentApp){
+  document.addEventListener("keydown", e => {
+      if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keydown) {
+          if (e.repeat) return;
+          var k = keyCodes[e.key] || e.key;
+          console.log(k);
+          currentApp.mem.writeStr(currentApp.exports.cpp_key_buffer(), k);
+          currentApp.exports.cpp_keydown();
+      }
+        });
+      document.addEventListener("keyup", e => {
+          if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keyup) {
+              var k = keyCodes[e.key] || e.key;
+              currentApp.mem.writeStr(currentApp.exports.cpp_key_buffer(), k);
+              currentApp.exports.cpp_keyup();
+          }
+      });
+      if(canvas){
+        console.log(canvas);
+        canvas.addEventListener("mousedown", e => {
+          console.log("ciaoo!")
+          if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keydown) {
+              if (e.repeat) return;
+              var k = mouseCodes[Math.min(e.button, 2)];
+              currentApp.mem.writeStr(currentApp.exports.cpp_key_buffer(), k);
+              currentApp.exports.cpp_keydown();
+          }
+      });
+      canvas.addEventListener("mouseup", e => {
+          if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keyup) {
+              var k = mouseCodes[Math.min(e.button, 2)];
+              currentApp.mem.writeStr(currentApp.exports.cpp_key_buffer(), k);
+              currentApp.exports.cpp_keyup();
+          }
+      });
+      canvas.addEventListener("mousemove", e => {
+          if (currentApp.exports.cpp_mousemove) {
+              console.log("canvas");
+              var rect = canvas.getBoundingClientRect();
+              var x = Math.round(e.clientX - rect.left);
+              var y = Math.round(e.clientY - rect.top);
+              currentApp.exports.cpp_mousemove(x, y);
+          }
+      });
+      }
+
     }
+    }
+  
+
   $('#run').on('click', async (event) =>{
     if (currentApp) {
       console.log('First, disallowing rAF from previous app.');
@@ -412,32 +461,8 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
          link.click();
          URL.revokeObjectURL(link.href);
       };
+      
 
-  /*
-  (function () {
-    var textFile = null,
-      makeTextFile = function (text) {
-        var data = new Blob([text], {type: 'text/plain'});
-
-        // If we are replacing a previously generated file we need to
-        // manually revoke the object URL to avoid memory leaks.
-        if (textFile !== null) {
-          window.URL.revokeObjectURL(textFile);
-        }
-
-        textFile = window.URL.createObjectURL(data);
-
-        return textFile;
-      };
-
-      var create = document.getElementById('run'),
-        textbox = editor.getValue();
-
-      create.addEventListener('click', function () {
-        var link = document.getElementById('downloadlink');
-        link.href = makeTextFile(textbox.value);
-        link.style.display = 'block';
-      }, false);
-    })();*/
+  
     
   </script>
