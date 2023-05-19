@@ -10,4 +10,4 @@ Based on https://github.com/binji/wasm-clang project.
 - `shared.js`: shared utilities
 - `sysroot.tar`: C++ standard headers and libraries (includes the g2d library)
 ## How to Run
-Host the site using python from terminal, launching "PyTHON -m http.server" or try it directly using this link:
+Host the site using python from terminal, launching "PyTHON -m http.server" or try it directly using this link: https://gricciardi00.github.io/Cpp-compiler-wasm-UNIPR/
