@@ -46,25 +46,31 @@
 
 
 <script>
-  function replaceCinWithString(inputString) {
-  const regex = /cin\s*>>\s*(\w+)/g;
-  let match = regex.exec(inputString);
-  while (match !== null) {
-    const variableName = match[1]; //match[0] = ">>"
-    let input = null;
-    while (input === null) {
-      input = prompt(`Enter a value for ${variableName}: `);
-      if (input === null) {
-        const shouldCancel = confirm('Do you want to cancel input for this variable?');
-        if (shouldCancel) {
-          return null;
-        }
-      }
+  function addReturnStatementToMain(code) {
+  // Find the index of the opening and closing braces of the main function
+  const mainStartIndex = code.indexOf('main() {');
+  const mainEndIndex = findMatchingClosingBrace(code, mainStartIndex + 8);
+
+  // Insert the return statement before the closing brace of the main function
+  const modifiedCode = code.slice(0, mainEndIndex) + '\n  return 0xC0C0A;' + code.slice(mainEndIndex);
+  return modifiedCode;
+}
+
+// Helper function to find the index of the matching closing brace
+function findMatchingClosingBrace(code, startIndex) {
+  let openBraces = 1;
+  let index = startIndex;
+
+  while (openBraces > 0 && index < code.length) {
+    if (code[index] === '{') {
+      openBraces++;
+    } else if (code[index] === '}') {
+      openBraces--;
     }
-    inputString = inputString.replace(match[0], `${variableName}=${input}`);
-    match = regex.exec(inputString);
+    index++;
   }
-  return inputString;
+
+  return index - 1;
 }
   const LAYOUT_CONFIG_KEY = 'layoutConfig';
 
@@ -171,7 +177,6 @@
   function CanvasComponent(container, state) {
     var elem = document.getElementById("canvas");
     if (elem) elem.parentNode.removeChild(elem);
-    console.log("canvasComponent")
     const canvasEl = document.createElement('canvas');
     canvasEl.className = 'canvas';
     container.getElement()[0].appendChild(canvasEl);
@@ -330,7 +335,7 @@ function initLayout() {
 function resetLayout() {
   localStorage.removeItem('layoutConfig');
   if (layout) {
-    console.log("Ok");
+    //console.log("Ok");
     layout.destroy();
     layout = null;
   }
@@ -394,7 +399,6 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
       if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keydown) {
           if (e.repeat) return;
           var k = keyCodes[e.key] || e.key;
-          console.log(k);
           currentApp.mem.writeStr(currentApp.exports.cpp_key_buffer(), k);
           currentApp.exports.cpp_keydown();
       }
@@ -407,9 +411,7 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
           }
       });
       if(canvas){
-        console.log(canvas);
         canvas.addEventListener("mousedown", e => {
-          console.log("ciaoo!")
           if (currentApp.exports.cpp_key_buffer && currentApp.exports.cpp_keydown) {
               if (e.repeat) return;
               var k = mouseCodes[Math.min(e.button, 2)];
@@ -426,7 +428,6 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
       });
       canvas.addEventListener("mousemove", e => {
           if (currentApp.exports.cpp_mousemove) {
-              console.log("canvas");
               var rect = canvas.getBoundingClientRect();
               var x = Math.round(e.clientX - rect.left);
               var y = Math.round(e.clientY - rect.top);
@@ -447,14 +448,18 @@ $('#Reset').on('click', event => { if (confirm('Confermi il reset ?')){
       }
     let api;
     api = new API(apiOptions);
-    await run(editor.getValue(),api);
-    codiceSave = editor.getValue();
+    codice = editor.getValue();
+    if(codice.includes("main_loop")){
+      codice = addReturnStatementToMain(codice);
+    }
+    await run(codice,api);
+    
     document.getElementById("btnDownload").disabled = false;
   });
 
   const downloadFile = () => {
          const link = document.createElement("a");
-         const content = codiceSave;
+         const content = codice;
          const file = new Blob([content], { type: 'text/plain' });
          link.href = URL.createObjectURL(file);
          link.download = "file.cpp";
