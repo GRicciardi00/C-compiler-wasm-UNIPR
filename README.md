@@ -1,4 +1,4 @@
-**# C++ clang-wasm compiler
+# C++ clang-wasm compiler
 ©Authors: Giuseppe Ricciardi, Giovanni Schianchi from Università degli studi di Parma.  <br />
 Based on https://github.com/binji/wasm-clang project.
 ## Project structure
