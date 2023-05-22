@@ -168,7 +168,7 @@ class Memory {
   }
 };
 
-class MemFS { //In memory file systems
+class MemFS { //Gestione degli in-memory file systems
   constructor(options) {
     const compileStreaming = options.compileStreaming;
     this.hostWrite = options.hostWrite;
@@ -244,7 +244,7 @@ class MemFS { //In memory file systems
     }
     this.hostMem_.write32(nwritten_out, size);
     this.hostWrite(str);
-    term.write(str+ '\n'); //messo totalmente ad intuito DA APPROFONDIRE
+    term.write(str+ '\n'); //al posto di mandare messaggio scrittura al worker -> scrivi direttamente sul terminale
     return ESUCCESS;
   }
 
