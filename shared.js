@@ -244,7 +244,7 @@ class MemFS { //Gestione degli in-memory file systems
     }
     this.hostMem_.write32(nwritten_out, size);
     this.hostWrite(str);
-    term.write(str+ '\n'); //al posto di mandare messaggio scrittura al worker -> scrivi direttamente sul terminale
+    term.write(str); //al posto di mandare messaggio scrittura al worker -> scrivi direttamente sul terminale
     return ESUCCESS;
   }
 
