@@ -829,7 +829,6 @@ class API {
     term.write('\n')
     return result;
   }
-
   async getModule(name) {
     if (this.moduleCache[name]) return this.moduleCache[name];
     const module = await this.hostLogAsync(`Fetching and compiling ${name}`,
