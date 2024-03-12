@@ -13,3 +13,4 @@ Based on https://github.com/binji/wasm-clang project.
 (Currently working well on Google Chrome) <br />
 Host the site using python from terminal, launching "Python -m http.server". <br />
 You can also try it directly using this link: https://gricciardi00.github.io/Cpp-compiler-wasm/
+![alt text](https://github.com/GRicciardi00/Cpp-compiler-wasm/blob/main/Screenshot.png)
